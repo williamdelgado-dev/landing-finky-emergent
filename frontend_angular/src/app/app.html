@@ -1,0 +1,322 @@
+<!-- Header -->
+<header class="header">
+  <div class="header-content">
+    <img src="https://finky.la/wp-content/uploads/2025/11/Diseno_sin_titulo__18_-removebg-preview-2.png" alt="Finky" class="logo">
+  </div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero">
+  <h1>Te aprobamos tu crédito educativo en solo <span class="highlight">5 minutos</span></h1>
+  <p class="subtitle">Busca la carrera que quieres estudiar, descubre las universidades aliadas y solicita tu crédito sin codeudor</p>
+  
+  <!-- Buscador -->
+  <div class="search-container">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"></circle>
+      <path d="m21 21-4.3-4.3"></path>
+    </svg>
+    <input 
+      type="text" 
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="carreraSeleccionada = null"
+      placeholder="¿Qué quieres estudiar? Ej: Ingeniería de Sistemas, Administración..."
+      class="search-input"
+    >
+  </div>
+
+  <!-- Tags populares -->
+  <div class="tags">
+    <button 
+      *ngFor="let tag of tagsPopulares" 
+      (click)="buscarPorTag(tag)"
+      [class.active]="searchTerm === tag"
+      class="tag"
+    >
+      {{ tag }}
+    </button>
+  </div>
+</section>
+
+<!-- Resultados de búsqueda -->
+<section *ngIf="searchTerm && !carreraSeleccionada" class="section bg-gray">
+  <div class="container">
+    <h2>{{ carrerasFiltradas.length }} carreras encontradas</h2>
+    <div class="cards-grid">
+      <div 
+        *ngFor="let carrera of carrerasFiltradas" 
+        (click)="seleccionarCarrera(carrera)"
+        class="card card-clickable"
+      >
+        <span class="badge">{{ carrera.area }}</span>
+        <h3>{{ carrera.nombre }}</h3>
+        <p class="text-gray">{{ carrera.duracion }}</p>
+        <p class="text-orange">
+          <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 21h18M9 8h1m4 0h1M9 12h1m4 0h1M9 16h1m4 0h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+          </svg>
+          {{ carrera.universidades.length }} universidades aliadas
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Vista de carrera seleccionada -->
+<section *ngIf="carreraSeleccionada" class="section bg-gray">
+  <div class="container">
+    <button (click)="volverAResultados()" class="back-btn">
+      ← Volver a resultados
+    </button>
+    
+    <div class="carrera-header">
+      <span class="badge">{{ carreraSeleccionada.area }}</span>
+      <h2>{{ carreraSeleccionada.nombre }}</h2>
+      <p class="text-gray">{{ carreraSeleccionada.duracion }} • Desde ${{ carreraSeleccionada.precio }} COP / semestre</p>
+    </div>
+
+    <h3 class="section-title">Universidades que ofrecen esta carrera</h3>
+    
+    <div class="universidades-list">
+      <div *ngFor="let uni of getUniversidadesCarrera(carreraSeleccionada)" class="universidad-card">
+        <img [src]="uni.logo" [alt]="uni.nombre" class="uni-logo">
+        <div class="uni-info">
+          <h4>{{ uni.nombre }}</h4>
+          <p class="text-gray">
+            <span>📍 {{ uni.ciudad }}</span>
+            <span>💻 {{ uni.modalidades.join(' / ') }}</span>
+          </p>
+        </div>
+        <button (click)="abrirSimulador(uni)" class="btn-primary">Simular crédito</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contenido cuando no hay búsqueda -->
+<ng-container *ngIf="!searchTerm">
+  
+  <!-- Universidades aliadas -->
+  <section class="section">
+    <div class="container">
+      <h2 class="text-center">Estudia en las mejores universidades del país</h2>
+      <div class="logos-scroll">
+        <img *ngFor="let uni of universidades" [src]="uni.logo" [alt]="uni.nombre" class="uni-logo-small">
+      </div>
+    </div>
+  </section>
+
+  <!-- Beneficios -->
+  <section class="section">
+    <div class="container">
+      <h2 class="text-center">¿Por qué elegir Finky?</h2>
+      <div class="beneficios-grid">
+        <div class="beneficio-card">
+          <div class="beneficio-icon">🛡️</div>
+          <h4>Sin codeudor</h4>
+          <p>Aquí respondes tú, no alguien más. No necesitas poner a un tercero como respaldo.</p>
+        </div>
+        <div class="beneficio-card">
+          <div class="beneficio-icon">⚡</div>
+          <h4>Aprobación en 5 min</h4>
+          <p>Proceso 100% digital. Simula, regístrate y obtén respuesta inmediata.</p>
+        </div>
+        <div class="beneficio-card">
+          <div class="beneficio-icon">💳</div>
+          <h4>Sin historial crediticio</h4>
+          <p>No te pedimos historial para entrar; te lo ayudamos a crear.</p>
+        </div>
+        <div class="beneficio-card">
+          <div class="beneficio-icon">⭐</div>
+          <h4>Renovación con ahorro</h4>
+          <p>Si ya eres Finker y renuevas, no te cobramos la fianza porque confiamos en ti.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="section bg-orange">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat">
+          <span class="stat-number">10k+</span>
+          <span class="stat-label">Estudiantes</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">25+</span>
+          <span class="stat-label">Universidades</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">20k+</span>
+          <span class="stat-label">Créditos</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">0</span>
+          <span class="stat-label">Codeudores</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Simulador standalone -->
+  <section class="section bg-gray">
+    <div class="container">
+      <div class="simulador-section">
+        <div class="simulador-info">
+          <h2>¿Cómo sería estudiar un semestre con Finky?</h2>
+          <p><strong>Juana</strong>, una de nuestros estudiantes, quería estudiar administración. Con Finky esto fue lo que encontró:</p>
+          <div class="ejemplo-calculo">
+            <div class="ejemplo-row"><span>Valor del Semestre</span><span>$5.000.000</span></div>
+            <div class="ejemplo-row"><span>Fianza</span><span>$132.000</span></div>
+            <div class="ejemplo-row"><span>Seguro</span><span>$17.000</span></div>
+            <div class="ejemplo-row"><span>Tarifa Finky</span><span>$576.000</span></div>
+            <div class="ejemplo-row total"><span>Total</span><span>$5.725.000</span></div>
+            <div class="ejemplo-resultado">
+              <p>Pago en 6 cuotas mensuales de</p>
+              <span class="cuota-grande">$954.166 COP</span>
+            </div>
+          </div>
+        </div>
+        <div class="simulador-box">
+          <h3>💳 Simula tu crédito</h3>
+          
+          <label>Valor del semestre</label>
+          <input type="range" [(ngModel)]="monto" min="1000000" max="15000000" step="100000" class="slider">
+          <p class="monto-display">${{ formatNumber(monto) }} COP</p>
+          
+          <label>Número de cuotas</label>
+          <div class="cuotas-btns">
+            <button *ngFor="let n of [3,4,5,6]" (click)="cuotas = n" [class.active]="cuotas === n">{{ n }}</button>
+          </div>
+          
+          <div class="calculo-detalle">
+            <div class="row"><span>Valor solicitado</span><span>${{ formatNumber(monto) }}</span></div>
+            <div class="row"><span>Fianza + IVA</span><span>${{ formatNumber(fianza) }}</span></div>
+            <div class="row"><span>Seguro</span><span>${{ formatNumber(seguro) }}</span></div>
+            <div class="row"><span>Tarifa Finky</span><span>${{ formatNumber(tarifaFinky) }}</span></div>
+            <div class="row total"><span>Total</span><span>${{ formatNumber(total) }}</span></div>
+          </div>
+          
+          <div class="resultado-cuota">
+            <p>Tus {{ cuotas }} cuotas mensuales son de</p>
+            <span class="cuota-grande">${{ formatNumber(cuotaMensual) }}</span>
+          </div>
+          
+          <button class="btn-dark">Solicitar mi crédito</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonios -->
+  <section class="section">
+    <div class="container">
+      <h2 class="text-center">Lo que dicen nuestros Finkers</h2>
+      <div class="testimonios-grid">
+        <div *ngFor="let t of testimonios" class="testimonio-card">
+          <div class="testimonio-header">
+            <img [src]="t.imagen" [alt]="t.nombre" class="testimonio-img">
+            <div>
+              <h4>{{ t.nombre }}</h4>
+              <p class="text-gray">Estudiante</p>
+            </div>
+          </div>
+          <p class="testimonio-texto">"{{ t.texto }}"</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQs -->
+  <section class="section bg-gray">
+    <div class="container container-small">
+      <h2 class="text-center">Preguntas frecuentes</h2>
+      <div class="faqs">
+        <div *ngFor="let faq of faqs; let i = index" class="faq-item">
+          <button (click)="toggleFaq(i)" class="faq-question">
+            <span>{{ faq.pregunta }}</span>
+            <span class="faq-icon" [class.open]="faqAbierto === i">▼</span>
+          </button>
+          <div *ngIf="faqAbierto === i" class="faq-answer">{{ faq.respuesta }}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</ng-container>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <img src="https://finky.la/wp-content/uploads/2025/11/Diseno_sin_titulo__18_-removebg-preview-2.png" alt="Finky" class="footer-logo">
+        <p class="text-gray">Facilitamos el acceso a la educación superior, sin historial crediticio ni codeudor.</p>
+      </div>
+      <div>
+        <h4>Enlaces</h4>
+        <ul>
+          <li><a href="#">Universidades aliadas</a></li>
+          <li><a href="#">Simular crédito</a></li>
+          <li><a href="#">Preguntas frecuentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <p>📞 +57 320 308 0644</p>
+        <p>✉️ hablemos&#64;finky.la</p>
+      </div>
+      <div>
+        <h4>¿Necesitas ayuda?</h4>
+        <a href="https://wa.link/xn4ncn" class="btn-whatsapp">💬 Escríbenos por WhatsApp</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2024 Finky. Todos los derechos reservados.
+    </div>
+  </div>
+</footer>
+
+<!-- Modal Simulador -->
+<div *ngIf="universidadSeleccionada" class="modal-overlay" (click)="cerrarSimulador()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-uni">
+        <img [src]="universidadSeleccionada.logo" [alt]="universidadSeleccionada.nombre" class="modal-logo">
+        <div>
+          <h3>{{ universidadSeleccionada.nombre }}</h3>
+          <p class="text-gray">{{ carreraSeleccionada?.nombre }}</p>
+        </div>
+      </div>
+      <button (click)="cerrarSimulador()" class="close-btn">✕</button>
+    </div>
+    <div class="modal-body">
+      <h3>💳 Simula tu crédito <span class="text-gray">en {{ universidadSeleccionada.nombre }}</span></h3>
+      
+      <label>Valor del semestre</label>
+      <input type="range" [(ngModel)]="monto" min="1000000" max="15000000" step="100000" class="slider">
+      <p class="monto-display">${{ formatNumber(monto) }} COP</p>
+      
+      <label>Número de cuotas</label>
+      <div class="cuotas-btns">
+        <button *ngFor="let n of [3,4,5,6]" (click)="cuotas = n" [class.active]="cuotas === n">{{ n }}</button>
+      </div>
+      
+      <div class="calculo-detalle">
+        <div class="row"><span>Valor solicitado</span><span>${{ formatNumber(monto) }}</span></div>
+        <div class="row"><span>Fianza + IVA</span><span>${{ formatNumber(fianza) }}</span></div>
+        <div class="row"><span>Seguro</span><span>${{ formatNumber(seguro) }}</span></div>
+        <div class="row"><span>Tarifa Finky</span><span>${{ formatNumber(tarifaFinky) }}</span></div>
+        <div class="row total"><span>Total</span><span>${{ formatNumber(total) }}</span></div>
+      </div>
+      
+      <div class="resultado-cuota">
+        <p>Tus {{ cuotas }} cuotas mensuales son de</p>
+        <span class="cuota-grande">${{ formatNumber(cuotaMensual) }}</span>
+      </div>
+      
+      <button class="btn-dark">Solicitar mi crédito</button>
+    </div>
+  </div>
+</div>
